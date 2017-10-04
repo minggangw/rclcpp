@@ -23,8 +23,10 @@
 
 using rclcpp::executors::multi_threaded_executor::MultiThreadedExecutor;
 
-MultiThreadedExecutor::MultiThreadedExecutor(const rclcpp::executor::ExecutorArgs & args)
-: executor::Executor(args)
+MultiThreadedExecutor::MultiThreadedExecutor(
+  const rclcpp::executor::ExecutorArgs & args,
+  bool yield_before_execute)
+: executor::Executor(args), yield_before_execute_(yield_before_execute)
 {
   number_of_threads_ = std::thread::hardware_concurrency();
   if (number_of_threads_ == 0) {
@@ -74,6 +76,9 @@ MultiThreadedExecutor::run(size_t)
         return;
       }
       any_exec = get_next_executable();
+    }
+    if (yield_before_execute_) {
+      std::this_thread::yield();
     }
     execute_any_executable(any_exec);
   }
