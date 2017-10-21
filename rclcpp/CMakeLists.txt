@@ -34,6 +34,7 @@ set(${PROJECT_NAME}_SRCS
   src/rclcpp/clock.cpp
   src/rclcpp/context.cpp
   src/rclcpp/contexts/default_context.cpp
+  src/rclcpp/duration.cpp
   src/rclcpp/event.cpp
   src/rclcpp/exceptions.cpp
   src/rclcpp/executor.cpp
@@ -244,6 +245,14 @@ if(BUILD_TESTING)
       rosidl_target_interfaces(test_externally_defined_services
         mock_msgs ${typesupport_impl_c})
     endforeach()
+  endif()
+
+  ament_add_gtest(test_duration test/test_duration.cpp
+    APPEND_LIBRARY_DIRS "${append_library_dirs}")
+  if(TARGET test_duration)
+    ament_target_dependencies(test_duration
+      "rcl")
+    target_link_libraries(test_duration ${PROJECT_NAME})
   endif()
 
   ament_add_gtest(test_time test/test_time.cpp
