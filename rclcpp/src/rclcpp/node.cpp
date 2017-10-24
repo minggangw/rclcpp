@@ -195,6 +195,13 @@ Node::get_node_base_interface()
   return node_base_;
 }
 
+rclcpp::node_interfaces::NodeClockInterface::SharedPtr
+Node::get_node_clock_interface()
+{
+  return node_clock_;
+}
+
+
 rclcpp::node_interfaces::NodeGraphInterface::SharedPtr
 Node::get_node_graph_interface()
 {

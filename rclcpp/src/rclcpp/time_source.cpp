@@ -42,15 +42,38 @@ TimeSource::TimeSource()
 {
 }
 
-void TimeSource::attachNode(std::shared_ptr<rclcpp::node::Node> node)
+void TimeSource::attachNode(rclcpp::node::Node::SharedPtr node)
 {
-  node_ = node;
-  // TODO(tfoote): Update QOS
-  clock_subscription_ = node_->create_subscription<builtin_interfaces::msg::Time>(
-    "clock", std::bind(&TimeSource::clock_cb, this, std::placeholders::_1),
-    rmw_qos_profile_default);
+  attachNode(
+    node->get_node_topics_interface(),
+    node->get_node_parameters_interface());
+}
 
-  parameter_client_ = std::make_shared<rclcpp::parameter_client::AsyncParametersClient>(node);
+void TimeSource::attachNode(
+  rclcpp::node_interfaces::NodeTopicsInterface::SharedPtr node_topics,
+  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr node_parameters)
+{
+  node_topics_ = node_topics;
+  node_parameters_ = node_parameters;
+  // TODO(tfoote): Update QOS
+  
+  rclcpp::callback_group::CallbackGroup::SharedPtr group;
+  using rclcpp::message_memory_strategy::MessageMemoryStrategy;
+  auto msg_mem_strat = MessageMemoryStrategy<MessageT, Alloc>::create_default();
+  
+  using MessageT = builtin_interfaces::msg::Time;
+  using Alloc_arg = std::allocator<void>;
+  auto allocator = std::make_shared<Alloc>();
+  using SubscriptionT_arg = rclcpp::subscription::Subscription<MessageT, Alloc>;
+  using CallbackT = void;
+  //void (rclcpp::TimeSource::*)(std::shared_ptr<builtin_interfaces::msg::Time_<std::allocator<void> > >);
+  
+  // clock_subscription_ = rclcpp::create_subscription<MessageT, CallbackT, Alloc=Alloc, SubscriptionT=SubscriptionT>(
+  //   node_topics_.get(),
+  //   std::string("clock"), std::bind(&TimeSource::clock_cb, this, std::placeholders::_1),
+  //   rmw_qos_profile_default, group, false, false, msg_mem_strat, allocator);
+
+  parameter_client_ = std::make_shared<rclcpp::parameter_client::AsyncParametersClient>(node_parameters_);
   parameter_subscription_ =
     parameter_client_->on_parameter_event(std::bind(&TimeSource::on_parameter_event,
       this, std::placeholders::_1));
@@ -92,7 +115,7 @@ void TimeSource::detachClock(std::shared_ptr<rclcpp::Clock> clock)
 
 TimeSource::~TimeSource()
 {
-  if (node_) {
+  if (node_topics_ || node_parameters_) {
     this->detachNode();
   }
 }
