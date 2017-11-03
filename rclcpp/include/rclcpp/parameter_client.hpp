@@ -268,6 +268,66 @@ private:
 };
 
 }  // namespace parameter_client
+
+
+class ParameterEventsFilter
+{
+public:
+  RCLCPP_SMART_PTR_DEFINITIONS(ParameterEventsFilter)
+  enum class EventType {NEW, DELETED, CHANGED};  ///< An enum for the type of event.
+  /// Used for the listed results
+  using EventPair = std::pair<EventType, rcl_interfaces::msg::Parameter *>;
+
+  RCLCPP_PUBLIC
+  inline ParameterEventsFilter(
+    rcl_interfaces::msg::ParameterEvent::SharedPtr event,
+    const std::vector<std::string> & names,
+    const std::vector<EventType> & types)
+  : event_(event)
+  {
+    if (std::find(types.begin(), types.end(), EventType::NEW) != types.end()) {
+      for (auto & new_parameter : event->new_parameters) {
+        if (std::find(names.begin(), names.end(), new_parameter.name) != names.end()) {
+          result_.push_back(
+            EventPair(EventType::NEW, &new_parameter));
+        }
+      }
+    }
+    if (std::find(types.begin(), types.end(), EventType::CHANGED) != types.end()) {
+      for (auto & changed_parameter : event->changed_parameters) {
+        if (std::find(names.begin(), names.end(), changed_parameter.name) != names.end()) {
+          result_.push_back(
+            EventPair(EventType::CHANGED, &changed_parameter));
+        }
+      }
+    }
+    if (std::find(types.begin(), types.end(), EventType::DELETED) != types.end()) {
+      for (auto & deleted_parameter : event->deleted_parameters) {
+        if (std::find(names.begin(), names.end(), deleted_parameter.name) != names.end()) {
+          result_.push_back(
+            EventPair(EventType::DELETED, &deleted_parameter));
+        }
+      }
+    }
+  }
+
+  /// Get the result of the filter
+  /**
+   * \return A std::vector<EventPair> of all matching parameter changes in this event.
+   */
+  RCLCPP_PUBLIC
+  inline
+  const std::vector<EventPair> & list()
+  {
+    return result_;
+  }
+
+private:
+  // access only allowed via const accessor.
+  std::vector<EventPair> result_;  ///< Storage of the resultant vector
+  rcl_interfaces::msg::ParameterEvent::SharedPtr event_;  ///< Keep event in scope
+};
+
 }  // namespace rclcpp
 
 #endif  // RCLCPP__PARAMETER_CLIENT_HPP_
