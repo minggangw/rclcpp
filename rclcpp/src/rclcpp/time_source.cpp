@@ -172,7 +172,7 @@ void TimeSource::on_parameter_event(const rcl_interfaces::msg::ParameterEvent::S
   rclcpp::ParameterEventsFilter filter(event, {"use_sim_time"},
     {rclcpp::ParameterEventsFilter::EventType::NEW,
       rclcpp::ParameterEventsFilter::EventType::CHANGED});
-  for (auto & it : filter.list()) {
+  for (auto & it : filter.get_events()) {
     if (it.second->value.type != parameter::ParameterType::PARAMETER_BOOL) {
       RCUTILS_LOG_ERROR("use_sim_time parameter set to something besides a bool");
       continue;
@@ -187,7 +187,7 @@ void TimeSource::on_parameter_event(const rcl_interfaces::msg::ParameterEvent::S
   }
   rclcpp::ParameterEventsFilter deleted(event, {"use_sim_time"},
     {rclcpp::ParameterEventsFilter::EventType::DELETED});
-  for (auto & it : deleted.list()) {
+  for (auto & it : deleted.get_events()) {
     (void) it;  // if there is a match it's already matched, don't bother reading it.
     // If the parameter is deleted mark it as unset but dont' change state.
     parameter_state_ = UNSET;

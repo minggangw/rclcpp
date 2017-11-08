@@ -269,7 +269,6 @@ private:
 
 }  // namespace parameter_client
 
-
 class ParameterEventsFilter
 {
 public:
@@ -279,7 +278,7 @@ public:
   using EventPair = std::pair<EventType, rcl_interfaces::msg::Parameter *>;
 
   RCLCPP_PUBLIC
-  inline ParameterEventsFilter(
+  ParameterEventsFilter(
     rcl_interfaces::msg::ParameterEvent::SharedPtr event,
     const std::vector<std::string> & names,
     const std::vector<EventType> & types)
@@ -316,8 +315,7 @@ public:
    * \return A std::vector<EventPair> of all matching parameter changes in this event.
    */
   RCLCPP_PUBLIC
-  inline
-  const std::vector<EventPair> & list()
+  const std::vector<EventPair> & get_events() const
   {
     return result_;
   }

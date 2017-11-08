@@ -57,10 +57,6 @@ protected:
     dp->changed_parameters.push_back(p);
   }
 
-  // void TearDown()
-  // {
-  // }
-
   rcl_interfaces::msg::ParameterEvent::SharedPtr empty;
   rcl_interfaces::msg::ParameterEvent::SharedPtr full;
   rcl_interfaces::msg::ParameterEvent::SharedPtr multiple;
@@ -77,111 +73,133 @@ protected:
    Testing filters.
  */
 TEST_F(TestParameterEventFilter, full_by_type) {
-  auto res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(3u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {nt, ct});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {nt, dt});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {ct, dt});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {nt});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {ct});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {dt});
-  EXPECT_EQ(1u, res.list().size());
+  auto res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(3u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {nt, ct});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {nt, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {ct, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {nt});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {ct});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {dt});
+  EXPECT_EQ(1u, res.get_events().size());
 }
 
 TEST_F(TestParameterEventFilter, full_by_name) {
-  auto res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(3u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "changed"},
-      {nt, ct, dt});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"new"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"changed"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(full,
-      {"deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
+  auto res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(3u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "changed"},
+    {nt, ct, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"new"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"changed"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    full,
+    {"deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
 }
 
 TEST_F(TestParameterEventFilter, empty) {
-  auto res = rclcpp::ParameterEventsFilter(empty,
-      {"new", "changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(0u, res.list().size());
+  auto res = rclcpp::ParameterEventsFilter(
+    empty,
+    {"new", "changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(0u, res.get_events().size());
 }
 
 TEST_F(TestParameterEventFilter, singular) {
-  auto res = rclcpp::ParameterEventsFilter(np,
-      {"new", "changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(cp,
-      {"new", "changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(dp,
-      {"new", "changed", "deleted"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
+  auto res = rclcpp::ParameterEventsFilter(
+    np,
+    {"new", "changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    cp,
+    {"new", "changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    dp,
+    {"new", "changed", "deleted"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
 }
 
 TEST_F(TestParameterEventFilter, multiple) {
-  auto res = rclcpp::ParameterEventsFilter(multiple,
-      {"new", "new2"},
-      {nt, ct, dt});
-  EXPECT_EQ(2u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(multiple,
-      {"new2"},
-      {nt, ct, dt});
-  EXPECT_EQ(1u, res.list().size());
-  res = rclcpp::ParameterEventsFilter(multiple,
-      {"new", "new2"},
-      {ct, dt});
-  EXPECT_EQ(0u, res.list().size());
+  auto res = rclcpp::ParameterEventsFilter(
+    multiple,
+    {"new", "new2"},
+    {nt, ct, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    multiple,
+    {"new2"},
+    {nt, ct, dt});
+  EXPECT_EQ(1u, res.get_events().size());
+  res = rclcpp::ParameterEventsFilter(
+    multiple,
+    {"new", "new2"},
+    {ct, dt});
+  EXPECT_EQ(0u, res.get_events().size());
 }
 
 TEST_F(TestParameterEventFilter, validate_data) {
-  auto res = rclcpp::ParameterEventsFilter(multiple,
-      {"new", "new2"},
-      {nt, ct, dt});
-  EXPECT_EQ(2u, res.list().size());
-  EXPECT_EQ(nt, res.list()[0].first);
-  EXPECT_EQ(nt, res.list()[1].first);
-  EXPECT_EQ(1, res.list()[0].second->value.integer_value);
-  EXPECT_EQ(2, res.list()[1].second->value.integer_value);
+  auto res = rclcpp::ParameterEventsFilter(
+    multiple,
+    {"new", "new2"},
+    {nt, ct, dt});
+  EXPECT_EQ(2u, res.get_events().size());
+  EXPECT_EQ(nt, res.get_events()[0].first);
+  EXPECT_EQ(nt, res.get_events()[1].first);
+  EXPECT_EQ(1, res.get_events()[0].second->value.integer_value);
+  EXPECT_EQ(2, res.get_events()[1].second->value.integer_value);
 }
